@@ -6,4 +6,6 @@ Dallas.
 
 See http://www.dial-multiscreen.org.
 
-TODO/Missing: Client Discovery
+TODO/Missing: 
+Client Discovery
+XML generation
