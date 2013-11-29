@@ -1,4 +1,3 @@
--- TODO/FIXME Some of this seems similar Continuations and Pipes
 {-# LANGUAGE ScopedTypeVariables, TupleSections, RankNTypes #-}
 module DIAL.Client.Application where
 import Network.URI
@@ -18,4 +17,3 @@ class Application a where
 
 -- This reads the application URI.
 type App r = EitherT (Transaction, String) (ReaderT URI IO) r
--- TODO/FIXME likely wrong approach to type variables here

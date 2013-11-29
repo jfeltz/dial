@@ -1,5 +1,6 @@
 module DIAL.Diagnostic where
 import Control.Monad.IO.Class
+import System.Log.Logger
 
 client :: (String, String)
 client = ("DIAL Client", "C")
@@ -10,16 +11,12 @@ server = ("DIAL Server", "S")
 upnp :: (String, String)
 upnp = ("UPnP Server", "U")
 
-diag :: (MonadIO m) => String -> m ()
-diag = liftIO . putStr
+dbg :: (MonadIO m) => String -> String -> m ()
+dbg comp = liftIO . debugM comp
 
 line :: String -> String
 line orig = '\n':orig
 
-debug :: (MonadIO m) => String -> m ()
-debug = diag . line . (++) "debug: "
-
-msg :: (Monad m, MonadIO m) => Int -> String -> String -> String -> m ()
-msg arrow src dst msg' =
-  diag $
-    '\n':src ++ ' ':replicate arrow '-'  ++ "> "++ dst ++ ": " ++ msg' ++ "\n"
+msg :: (Monad m, MonadIO m) => String -> Int -> String -> String -> String -> m ()
+msg comp arrow src dst msg' =
+  dbg comp $ src ++ ' ':replicate arrow '-' ++ "> "++ dst ++ ": " ++ msg'

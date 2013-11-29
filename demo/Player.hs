@@ -1,22 +1,47 @@
 module Player where
 import Network.URI
 import Network.HTTP
+import Control.Applicative
 
-playing, stopped, caching :: String
+playing, stopped :: String
 playing = "P1"
 stopped = "P0"
-caching = "C"
 
-data PlayerState = Launched | Caching | Playing Bool deriving Eq
+data PlayerState = Playing Bool deriving Eq
 instance (Show PlayerState) where
   show (Playing False) = stopped
   show (Playing True)  = playing
-  show Caching         = caching
 
 type Seconds = Int
 data Command = Play URI | Pause | Stop | Back Seconds | Forward Seconds
 instance (Show Command) where
   show = encode
+
+decodeSeconds :: String -> Either String Seconds
+decodeSeconds str =
+  case reads str :: [(Seconds, String)] of
+    []                     ->
+      Left $ "failed to parse seconds in: " ++ str
+    [(seconds, [])]        ->
+      Right seconds
+    [(_, remainder)]       ->
+      Left $ "erroneous trailing input: " ++ remainder
+
+
+decode :: String -> Either String Command
+-- Forward
+decode ('F':rest)        = Forward <$> decodeSeconds rest
+decode ('B':rest)        = Back <$> decodeSeconds rest
+-- Stopped
+decode ('P':'0':[])      = Right Stop
+decode ('P':'1':' ':uri) =
+ maybe
+   (Left $ "invalid uri to be played" ++ show uri)
+   (Right . Play)
+   $ parseURI uri
+-- Paused
+decode ('P':[])         = Right Pause
+decode unrecognized     = Left $ "unrecognized: " ++ unrecognized
 
 encode :: Command -> String
 encode (Play uri)  = playing ++ ' ' : show uri
@@ -53,6 +78,6 @@ toState response = parseCode >> parseBody
         let err = Left $ "invalid player state: " ++ show body in
         maybe err Right $
           lookup (head body) [
-            (playing, Playing True),(stopped, Playing False),(caching, Caching)
+            (playing, Playing True),(stopped, Playing False)
           ]
       where body = lines . rspBody $ response

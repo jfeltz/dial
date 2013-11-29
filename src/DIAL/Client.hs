@@ -13,17 +13,17 @@ import qualified DIAL.Client.State as State
 import Prelude hiding (lookup)
 import DIAL.Diagnostic
 
--- TODO/FIXME This assumes a single application client,
--- until I get a better feel for DIAL
-fromApp :: (Application a) => a -> IO ()
-fromApp app = do
-  diag participants
+-- This is an example use-case only.
+exampleApp :: (Application a) => a -> IO ()
+exampleApp app = do
+  dbg "Client" participants
   print =<< runReaderT (
     runEitherT $
       State.discovering
         >>= State.ddr
         >>= State.launching
         >>= State.operating
+        >>= State.deleting
     ) app
   where
     participants :: String

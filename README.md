@@ -1,4 +1,5 @@
 dial
 ====
-
-Netflix(TM) DIAL 2nd-Screen Protocol Implementation and Framework for Haskell
+Partial Netflix(TM) DIAL 2nd-Screen Protocol Implementation and Framework for
+Haskell for a Computer Networking class assignment at the University of Texas at
+Dallas. 
